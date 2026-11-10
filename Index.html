@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tubenfunk Röhrenradio</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%}
+body{background:radial-gradient(ellipse at 50% 0,#4a3a2c,#1d1510 70%);font-family:Georgia,"Times New Roman",serif;color:#e8d9b5;display:flex;justify-content:center;padding:max(16px,env(safe-area-inset-top)) 12px max(24px,env(safe-area-inset-bottom))}
+.cab{width:100%;max-width:560px;padding:18px 16px 20px;border-radius:26px 26px 14px 14px;background:repeating-linear-gradient(92deg,rgba(0,0,0,.09) 0 2px,transparent 2px 7px,rgba(255,255,255,.03) 7px 9px),linear-gradient(#6b4527,#4a2d17 60%,#3b2312);box-shadow:inset 0 2px 0 rgba(255,220,170,.25),inset 0 0 0 3px #2a180b,0 18px 40px rgba(0,0,0,.6)}
+header{display:flex;justify-content:space-between;align-items:baseline;margin:0 4px 12px}
+.plate{font-size:20px;letter-spacing:.22em;color:#d9b565;text-shadow:0 1px 0 #000}
+.sub{font-size:12px;font-style:italic;color:#bda676}
+.dialwin{display:flex;gap:12px;align-items:stretch}
+.glass{position:relative;flex:1;height:120px;border-radius:10px;background:linear-gradient(#cdb98a,#b49f6f);overflow:hidden;box-shadow:inset 0 0 0 3px #b88f3c,inset 0 0 0 5px #2a180b,inset 0 6px 14px rgba(0,0,0,.5);transition:background .6s}
+.glass::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 60%,rgba(255,190,80,0),rgba(0,0,0,.35));opacity:1;transition:.6s}
+.on .glass{background:linear-gradient(#ffe7a6,#f2c46a)}
+.on .glass::before{background:radial-gradient(ellipse at 50% 55%,rgba(255,210,120,.55),rgba(90,40,0,.4))}
+.scale{position:absolute;left:4%;right:4%;top:34px;height:44px;border-top:1px solid #3a2a14}
+.tick{position:absolute;top:0;width:1px;height:7px;background:#3a2a14}
+.tick.big{height:14px}
+.tick b{position:absolute;top:16px;left:-12px;width:25px;text-align:center;font:11px Georgia,serif;color:#3a2a14}
+.needle{position:absolute;top:22px;bottom:28px;width:2px;margin-left:-1px;background:#b3261e;box-shadow:0 0 6px rgba(255,60,30,.7)}
+.disp{position:absolute;left:10px;right:10px;bottom:8px;font:italic 14px Georgia,serif;color:#3a2a14;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dname{position:absolute;left:10px;top:7px;font:11px Georgia,serif;letter-spacing:.18em;color:#5c4520}
+.eye{width:74px;border-radius:12px;background:#120d08;box-shadow:inset 0 0 0 3px #b88f3c,inset 0 0 0 5px #2a180b;display:grid;place-items:center}
+.eye i{--w:90deg;display:block;width:50px;height:50px;border-radius:50%;background:conic-gradient(from 225deg,#020 0 var(--w),#43ff7a var(--w) 360deg);box-shadow:0 0 calc(4px + var(--g,0)*18px) rgba(80,255,130,calc(.1 + var(--g,0)*.7));opacity:.35;transition:opacity .4s}
+.on .eye i{opacity:1}
+.grille{height:76px;margin:12px 0;border-radius:8px;background:repeating-linear-gradient(0deg,rgba(0,0,0,.35) 0 1px,transparent 1px 4px),repeating-linear-gradient(90deg,rgba(0,0,0,.3) 0 1px,transparent 1px 4px),#8c6a3a;box-shadow:inset 0 0 0 3px #2a180b,inset 0 4px 12px rgba(0,0,0,.6)}
+.ctrl{display:grid;grid-template-columns:1fr 1.5fr 1fr;align-items:center;justify-items:center;gap:6px}
+.kw{display:flex;flex-direction:column;align-items:center;gap:8px;font-size:12px;color:#d9c08a;text-align:center}
+.knob{position:relative;border-radius:50%;width:var(--s);height:var(--s);touch-action:none;cursor:grab;outline:none;background:repeating-conic-gradient(#0f0a07 0 6deg,#2b2018 6deg 12deg);box-shadow:0 6px 12px rgba(0,0,0,.7),0 0 0 3px #1a110a,0 0 0 5px #7e5a2a}
+.knob::before{content:"";position:absolute;inset:14%;border-radius:50%;background:radial-gradient(circle at 35% 30%,#f4d98c,#b8893a 55%,#6e4c1a);box-shadow:inset 0 -3px 6px rgba(0,0,0,.45)}
+.knob::after{content:"";position:absolute;left:50%;top:6%;width:4px;height:22%;margin-left:-2px;border-radius:2px;background:#f6ecd0}
+.knob:focus-visible{box-shadow:0 0 0 3px #fff,0 0 0 6px #d9a441}
+.knob.sm{--s:78px}.knob.lg{--s:118px}
+.pw{cursor:pointer}
+.mark{display:flex;justify-content:space-between;width:100%;font-size:11px;color:#bda676;padding:0 4px}
+.slid{margin:18px 6px 4px;display:grid;gap:6px}
+.slid label{font-size:12px;color:#d9c08a;display:flex;justify-content:space-between}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:30px;background:transparent;touch-action:pan-y}
+input[type=range]::-webkit-slider-runnable-track{height:8px;border-radius:4px;background:#0f0a07;box-shadow:inset 0 2px 3px #000,0 1px 0 rgba(255,220,170,.25)}
+input[type=range]::-moz-range-track{height:8px;border-radius:4px;background:#0f0a07;box-shadow:inset 0 2px 3px #000}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:34px;height:26px;margin-top:-9px;border-radius:5px;background:linear-gradient(90deg,#8a6420,#f0d58a 45%,#8a6420);border:1px solid #2a180b;box-shadow:0 3px 6px rgba(0,0,0,.6)}
+input[type=range]::-moz-range-thumb{width:34px;height:26px;border-radius:5px;background:linear-gradient(90deg,#8a6420,#f0d58a 45%,#8a6420);border:1px solid #2a180b}
+input[type=range]:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.drawer{margin-top:16px;background:rgba(20,10,4,.45);border-radius:10px;box-shadow:inset 0 0 0 1px rgba(255,220,170,.2)}
+.drawer summary{padding:12px 14px;cursor:pointer;font-size:14px;color:#e6c97f}
+.dbody{padding:0 12px 12px}
+.row{display:flex;gap:8px;margin-bottom:10px}
+.row input{flex:1;min-width:0;padding:10px;border-radius:6px;border:1px solid #2a180b;background:#efe0b8;color:#2a180b;font:15px Georgia,serif}
+button.b{padding:10px 14px;border-radius:6px;border:1px solid #2a180b;background:linear-gradient(#e6c97f,#a67c2e);color:#2a180b;font:14px Georgia,serif;cursor:pointer}
+.hint{font-size:12px;color:#bda676;margin:0 0 10px;line-height:1.4}
+.list{display:grid;gap:6px;max-height:320px;overflow:auto}
+.st{display:flex;justify-content:space-between;gap:10px;text-align:left;padding:9px 11px;border-radius:6px;border:1px solid rgba(255,220,170,.2);background:rgba(255,235,190,.06);color:#e8d9b5;font:14px Georgia,serif;cursor:pointer;width:100%}
+.st.act{background:rgba(255,190,80,.22);border-color:#d9a441}
+.st span:last-child{color:#d9b565;white-space:nowrap}
+.res{margin-top:6px}
+</style>
+</head>
+<body>
+<main class="cab" id="cab">
+  <header><span class="plate">TUBENFUNK</span><span class="sub">Weltempfänger mit Röhrenklang</span></header>
+  <section class="dialwin">
+    <div class="glass">
+      <div class="dname">UKW</div>
+      <div class="scale" id="scale"></div>
+      <div class="needle" id="needle"></div>
+      <div class="disp" id="disp">Aus</div>
+    </div>
+    <div class="eye" aria-hidden="true"><i id="eye"></i></div>
+  </section>
+  <div class="grille" aria-hidden="true"></div>
+  <section class="ctrl">
+    <div class="kw"><div class="knob sm" id="kVol" role="slider" tabindex="0" aria-label="Lautstärke" aria-valuemin="0" aria-valuemax="100"></div>Lautstärke</div>
+    <div class="kw"><div class="knob lg" id="kTune" role="slider" tabindex="0" aria-label="Sendersuchlauf" aria-valuemin="88" aria-valuemax="108"></div>Abstimmung</div>
+    <div class="kw"><div class="knob sm pw" id="kPow" role="switch" tabindex="0" aria-label="Ein/Aus" aria-checked="false"></div>Ein / Aus</div>
+  </section>
+  <div class="slid"><label for="sNoise"><span>Rauschen zwischen den Sendern</span></label><input type="range" id="sNoise" min="0" max="100" value="60"></div>
+  <details class="drawer" open>
+    <summary>Sender &amp; Suche</summary>
+    <div class="dbody">
+      <div class="row"><input id="q" placeholder="Sendername suchen oder Stream-URL einfügen" autocomplete="off"><button class="b" id="go">Los</button></div>
+      <p class="hint" id="hint">Die Suche nutzt das offene Verzeichnis radio-browser.info mit zehntausenden Sendern weltweit. Eine Stream-URL (http…) legst du direkt auf die Skala.</p>
+      <div class="list res" id="res"></div>
+      <div class="list" id="list"></div>
+    </div>
+  </details>
+</main>
+<script>
+(function(){
+var $=function(s){return document.querySelector(s)};
+var F0=88,F1=108,RANGE=F1-F0,WIN=0.55/RANGE; // Empfangsfenster in Skalenanteilen
+var base=[
+ {n:"SWR3",f:89.5,u:"https://liveradio.swr.de/sw282p3/swr3/play.mp3"},
+ {n:"Deutschlandfunk",f:91.7,u:"https://st01.sslstream.dlf.de/dlf/01/128/mp3/stream.mp3"},
+ {n:"Deutschlandfunk Kultur",f:93.8,u:"https://st02.sslstream.dlf.de/dlf/02/128/mp3/stream.mp3"},
+ {n:"SomaFM Groove Salad",f:95.9,u:"https://ice1.somafm.com/groovesalad-128-mp3"},
+ {n:"Radio Paradise",f:98.2,u:"https://stream.radioparadise.com/mp3-128"},
+ {n:"KEXP Seattle",f:100.3,u:"https://kexp.streamguys1.com/kexp128.mp3"},
+ {n:"FIP Paris",f:102.4,u:"https://icecast.radiofrance.fr/fip-midfi.mp3"},
+ {n:"BBC World Service",f:104.6,u:"https://stream.live.vc.bbcmedia.co.uk/bbc_world_service"},
+ {n:"SomaFM Secret Agent",f:106.7,u:"https://ice1.somafm.com/secretagent-128-mp3"}
+];
+var custom=[];try{custom=JSON.parse(localStorage.getItem("tubenfunk.custom")||"[]")}catch(e){}
+var st=base.concat(custom);
+var S={tune:.07,vol:.6,noise:.6,on:false};
+var audio=new Audio();audio.preload="none";audio.crossOrigin=null;
+var ok=false,cur=null,timer=null,ctx=null,ng=null;
+
+// Skala
+var sc=$("#scale");
+for(var f=F0;f<=F1;f+=.5){var t=document.createElement("div"),big=f%2===0;t.className="tick"+(big?" big":"");t.style.left=((f-F0)/RANGE*100)+"%";if(big){var b=document.createElement("b");b.textContent=f;t.appendChild(b)}sc.appendChild(t)}
+var needle=$("#needle");
+
+// Rauschen (Web Audio)
+function initAudio(){
+  if(ctx){if(ctx.state==="suspended")ctx.resume();return}
+  var AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
+  ctx=new AC();var len=ctx.sampleRate*2,buf=ctx.createBuffer(1,len,ctx.sampleRate),d=buf.getChannelData(0),last=0;
+  for(var i=0;i<len;i++){var w=Math.random()*2-1;last=(last+.12*w)/1.12;d[i]=w*.55+last*2.2}
+  var src=ctx.createBufferSource();src.buffer=buf;src.loop=true;
+  var hp=ctx.createBiquadFilter();hp.type="highpass";hp.frequency.value=300;
+  var lp=ctx.createBiquadFilter();lp.type="lowpass";lp.frequency.value=5200;
+  ng=ctx.createGain();ng.gain.value=0;
+  src.connect(hp);hp.connect(lp);lp.connect(ng);ng.connect(ctx.destination);src.start();
+}
+
+function nearest(){
+  var best=null,bd=9;
+  st.forEach(function(s){var d=Math.abs(S.tune-(s.f-F0)/RANGE);if(d<bd){bd=d;best=s}});
+  return {s:best,d:bd};
+}
+function setStation(s){
+  if(s===cur)return;cur=s;ok=false;clearTimeout(timer);
+  timer=setTimeout(function(){
+    if(cur!==s)return;
+    if(s){audio.src=s.u;var p=audio.play();if(p&&p.catch)p.catch(function(){})}
+    else{audio.pause();audio.removeAttribute("src");audio.load()}
+  },s?220:500);
+}
+function update(){
+  var tp=4+S.tune*92;needle.style.left=tp+"%";
+  var fr=F0+S.tune*RANGE,n=nearest(),lock=Math.max(0,1-n.d/WIN);
+  var tuned=S.on&&n.s&&lock>0;
+  setStation(tuned?n.s:null);
+  var eff=tuned&&ok?lock:0;
+  audio.volume=Math.min(1,S.vol*Math.pow(eff,.6));
+  if(ng){var hiss=S.on?S.vol*S.noise*(0.55*(1-eff)+0.04):0;ng.gain.setTargetAtTime(hiss,ctx.currentTime,.03)}
+  var eye=$("#eye");eye.style.setProperty("--w",(1-eff)*90+"deg");eye.style.setProperty("--g",S.on?eff:0);
+  var disp=$("#disp");
+  if(!S.on)disp.textContent="Aus";
+  else if(tuned&&ok&&lock>.6)disp.textContent=n.s.n+"  "+fr.toFixed(1)+" MHz";
+  else if(tuned&&!ok)disp.textContent="Suche "+n.s.n+"…";
+  else disp.textContent=fr.toFixed(1)+" MHz";
+  $("#cab").classList.toggle("on",S.on);
+  $("#kTune").setAttribute("aria-valuenow",fr.toFixed(1));
+  $("#kVol").setAttribute("aria-valuenow",Math.round(S.vol*100));
+  document.querySelectorAll(".st").forEach(function(b){b.classList.toggle("act",S.on&&tuned&&ok&&lock>.6&&b.dataset.u===n.s.u)});
+}
+audio.addEventListener("playing",function(){ok=true;update()});
+["waiting","stalled","error","emptied"].forEach(function(e){audio.addEventListener(e,function(){ok=false;update()})});
+
+// Drehknöpfe
+function knob(el,key,min,max,step,after){
+  function draw(){el.style.transform="rotate("+(min+(max-min)*S[key])+"deg)"}
+  var a0,v0,drag=false;
+  function ang(e){var r=el.getBoundingClientRect();return Math.atan2(e.clientY-(r.top+r.height/2),e.clientX-(r.left+r.width/2))*180/Math.PI}
+  el.addEventListener("pointerdown",function(e){initAudio();drag=true;a0=ang(e);v0=S[key];el.setPointerCapture(e.pointerId);el.style.cursor="grabbing"});
+  el.addEventListener("pointermove",function(e){if(!drag)return;var d=ang(e)-a0;while(d>180)d-=360;while(d<-180)d+=360;a0=ang(e);S[key]=Math.max(0,Math.min(1,S[key]+d/(max-min)));draw();update()});
+  function end(){drag=false;el.style.cursor=""}
+  el.addEventListener("pointerup",end);el.addEventListener("pointercancel",end);
+  el.addEventListener("wheel",function(e){e.preventDefault();S[key]=Math.max(0,Math.min(1,S[key]-Math.sign(e.deltaY)*step));draw();update()},{passive:false});
+  el.addEventListener("keydown",function(e){var m={ArrowRight:1,ArrowUp:1,ArrowLeft:-1,ArrowDown:-1}[e.key];if(!m)return;e.preventDefault();initAudio();S[key]=Math.max(0,Math.min(1,S[key]+m*step));draw();update()});
+  return draw;
+}
+var dTune=knob($("#kTune"),"tune",-140,140,.0025);
+var dVol=knob($("#kVol"),"vol",-140,140,.04);
+function power(){
+  initAudio();S.on=!S.on;
+  $("#kPow").style.transform="rotate("+(S.on?70:0)+"deg)";
+  $("#kPow").setAttribute("aria-checked",S.on);
+  if(!S.on){clearTimeout(timer);cur=null;ok=false;audio.pause()}
+  update();
+}
+$("#kPow").addEventListener("click",power);
+$("#kPow").addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();power()}});
+$("#sNoise").addEventListener("input",function(e){S.noise=e.target.value/100;update()});
+
+// Sprung zu einem Sender (Knopf dreht animiert)
+var raf=0;
+function tuneTo(f){
+  initAudio();if(!S.on)power();
+  var from=S.tune,to=(f-F0)/RANGE,t0=performance.now(),dur=900;cancelAnimationFrame(raf);
+  (function step(now){var k=Math.min(1,(now-t0)/dur),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;S.tune=from+(to-from)*e;dTune();update();if(k<1)raf=requestAnimationFrame(step)})(t0);
+}
+
+// Senderliste
+function render(){
+  st.sort(function(a,b){return a.f-b.f});
+  var l=$("#list");l.innerHTML="";
+  st.forEach(function(s){var b=document.createElement("button");b.className="st";b.dataset.u=s.u;
+    var a=document.createElement("span");a.textContent=s.n;var c=document.createElement("span");c.textContent=s.f.toFixed(1)+" MHz";
+    b.appendChild(a);b.appendChild(c);b.addEventListener("click",function(){tuneTo(s.f)});l.appendChild(b)});
+  update();
+}
+function freeFreq(){
+  var best=88.5,bd=-1;
+  for(var f=88.4;f<=107.6;f+=.1){var m=9;st.forEach(function(s){m=Math.min(m,Math.abs(s.f-f))});if(m>bd){bd=m;best=f}}
+  return Math.round(best*10)/10;
+}
+function addStation(n,u){
+  if(st.some(function(s){return s.u===u})){var e=st.filter(function(s){return s.u===u})[0];tuneTo(e.f);return}
+  var s={n:n,f:freeFreq(),u:u};st.push(s);custom.push(s);
+  try{localStorage.setItem("tubenfunk.custom",JSON.stringify(custom))}catch(e){}
+  render();tuneTo(s.f);
+}
+function search(){
+  var q=$("#q").value.trim();if(!q)return;
+  if(/^https?:\/\//i.test(q)){addStation("Eigener Sender",q);$("#q").value="";return}
+  var h=$("#hint"),r=$("#res");h.textContent="Suche läuft…";r.innerHTML="";
+  fetch("https://de1.api.radio-browser.info/json/stations/search?name="+encodeURIComponent(q)+"&limit=12&hidebroken=true&order=clickcount&reverse=true")
+   .then(function(x){return x.json()}).then(function(a){
+     if(!a.length){h.textContent="Nichts gefunden. Versuch einen anderen Namen.";return}
+     h.textContent="Tippe auf einen Treffer, um ihn auf die Skala zu legen.";
+     a.forEach(function(x){var u=x.url_resolved||x.url;if(!u)return;
+       var b=document.createElement("button");b.className="st";
+       var s1=document.createElement("span");s1.textContent=x.name.trim()||"Sender";
+       var s2=document.createElement("span");s2.textContent=(x.countrycode||"")+(x.bitrate?" "+x.bitrate+" kbit":"");
+       b.appendChild(s1);b.appendChild(s2);
+       b.addEventListener("click",function(){addStation(s1.textContent,u)});r.appendChild(b)});
+   }).catch(function(){h.textContent="Die Suche braucht eine Internetverbindung und funktioniert nur, wenn die Datei lokal oder auf eigener Seite geöffnet ist."});
+}
+$("#go").addEventListener("click",search);
+$("#q").addEventListener("keydown",function(e){if(e.key==="Enter")search()});
+
+dTune();dVol();render();
+})();
+</script>
+</body>
+</html>
